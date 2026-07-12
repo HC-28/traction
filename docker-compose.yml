@@ -1,0 +1,16 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: traction_postgres
+    environment:
+      POSTGRES_DB: traction_db
+      POSTGRES_USER: traction_user
+      POSTGRES_PASSWORD: traction_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - traction_pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+volumes:
+  traction_pgdata:
