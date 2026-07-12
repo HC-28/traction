@@ -18,6 +18,13 @@ replay_pid*
 # ========================
 application-local.yml
 application-secret.yml
+application-dev.yml
+# Scripts — not for git
+upload_images.ps1
+backdate_commits.ps1
+# Seed files — not for git
+backend/src/main/resources/db/migration/V5__seed_users_and_vehicles.sql
+seed_project.py
 
 # ========================
 # Node / React
