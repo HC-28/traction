@@ -24,6 +24,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/register")
+    @io.swagger.v3.oas.annotations.Operation(summary = "Register a new user", description = "Creates a new user account with default ROLE_USER and returns JWT token.")
     public ResponseEntity<ApiResponse<AuthResponse>> register(@Valid @RequestBody RegisterRequest req) {
         AuthResponse response = authService.register(req);
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -31,6 +32,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
+    @io.swagger.v3.oas.annotations.Operation(summary = "Authenticate user", description = "Verifies username/password credentials and returns a JWT token.")
     public ResponseEntity<ApiResponse<AuthResponse>> login(@Valid @RequestBody LoginRequest req) {
         AuthResponse response = authService.login(req);
         return ResponseEntity.ok(ApiResponse.success(response));

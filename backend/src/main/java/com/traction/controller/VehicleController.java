@@ -6,6 +6,7 @@ import com.traction.dto.response.VehicleResponse;
 import com.traction.entity.VehicleStatus;
 import com.traction.service.VehicleService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ import java.util.UUID;
 @RequestMapping("/api/vehicles")
 @RequiredArgsConstructor
 @Tag(name = "Vehicles", description = "Vehicle Inventory Management Endpoints")
+@SecurityRequirement(name = "bearerAuth")
 public class VehicleController {
 
     private final VehicleService vehicleService;
