@@ -24,6 +24,7 @@ public class VehicleResponse {
     private int mileage;
     private VehicleStatus status;
     private String description;
+    private String imageUrl;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -39,6 +40,7 @@ public class VehicleResponse {
                 .mileage(vehicle.getMileage())
                 .status(vehicle.getStatus())
                 .description(vehicle.getDescription())
+                .imageUrl(vehicle.getImageUrl())
                 .createdAt(vehicle.getCreatedAt())
                 .updatedAt(vehicle.getUpdatedAt())
                 .build();

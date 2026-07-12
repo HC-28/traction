@@ -65,6 +65,10 @@ public class Vehicle {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Size(max = 512)
+    @Column(name = "image_url", length = 512)
+    private String imageUrl;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;

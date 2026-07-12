@@ -109,4 +109,19 @@ public class VehicleController {
         vehicleService.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    // ─────────────────────────────────────────────────────────────────
+    // POST /api/vehicles/{id}/image — ADMIN only (Cloudinary upload)
+    // ─────────────────────────────────────────────────────────────────
+
+    @PostMapping(value = "/{id}/image", consumes = org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Upload vehicle photo to Cloudinary (ADMIN)")
+    public ResponseEntity<ApiResponse<VehicleResponse>> uploadImage(
+            @PathVariable UUID id,
+            @RequestParam("file") org.springframework.web.multipart.MultipartFile file)
+            throws java.io.IOException {
+        VehicleResponse response = vehicleService.uploadImage(id, file);
+        return ResponseEntity.ok(ApiResponse.success("Image uploaded successfully", response));
+    }
 }

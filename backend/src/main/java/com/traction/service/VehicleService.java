@@ -12,7 +12,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.UUID;
 
@@ -22,6 +24,7 @@ import java.util.UUID;
 public class VehicleService {
 
     private final VehicleRepository vehicleRepository;
+    private final CloudinaryService cloudinaryService;
 
     // ─────────────────────────────────────────────────────────────────
     // Create
@@ -123,5 +126,17 @@ public class VehicleService {
     private Vehicle getOrThrow(UUID id) {
         return vehicleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found with id: " + id));
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // Image Upload
+    // ─────────────────────────────────────────────────────────────────
+
+    @Transactional
+    public VehicleResponse uploadImage(UUID id, MultipartFile file) throws IOException {
+        Vehicle vehicle = getOrThrow(id);
+        String url = cloudinaryService.uploadImage(file);
+        vehicle.setImageUrl(url);
+        return VehicleResponse.from(vehicleRepository.save(vehicle));
     }
 }

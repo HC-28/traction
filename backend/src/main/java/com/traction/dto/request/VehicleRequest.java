@@ -40,4 +40,7 @@ public class VehicleRequest {
     private int mileage;
 
     private String description;
+
+    @Size(max = 512)
+    private String imageUrl;
 }

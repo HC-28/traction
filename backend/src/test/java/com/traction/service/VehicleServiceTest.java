@@ -18,7 +18,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
@@ -34,6 +36,9 @@ class VehicleServiceTest {
 
 	@Mock
 	private VehicleRepository vehicleRepository;
+
+	@Mock
+	private CloudinaryService cloudinaryService;
 
 	@InjectMocks
 	private VehicleService vehicleService;
@@ -289,5 +294,45 @@ class VehicleServiceTest {
 				.mileage(0)
 				.status(VehicleStatus.AVAILABLE)
 				.build();
+	}
+
+	// ─────────────────────────────────────────────────────────────────
+	// Image Upload
+	// ─────────────────────────────────────────────────────────────────
+
+	@Nested
+	@DisplayName("Image Upload")
+	class ImageUploadTests {
+
+		@Test
+		@DisplayName("should upload image and persist Cloudinary URL")
+		void shouldUploadImageAndPersistUrl() throws IOException {
+			UUID id = UUID.randomUUID();
+			Vehicle vehicle = buildVehicle(id, "Toyota", "Camry", "IMGVIN000000001");
+			MultipartFile mockFile = mock(MultipartFile.class);
+			String expectedUrl = "https://res.cloudinary.com/traction/image.jpg";
+
+			when(vehicleRepository.findById(id)).thenReturn(Optional.of(vehicle));
+			when(cloudinaryService.uploadImage(mockFile)).thenReturn(expectedUrl);
+			when(vehicleRepository.save(any(Vehicle.class))).thenAnswer(inv -> inv.getArgument(0));
+
+			VehicleResponse response = vehicleService.uploadImage(id, mockFile);
+
+			assertThat(response.getImageUrl()).isEqualTo(expectedUrl);
+			verify(cloudinaryService).uploadImage(mockFile);
+			verify(vehicleRepository).save(any(Vehicle.class));
+		}
+
+		@Test
+		@DisplayName("should throw ResourceNotFoundException when vehicle not found during upload")
+		void shouldThrowWhenVehicleNotFoundDuringUpload() {
+			UUID id = UUID.randomUUID();
+			MultipartFile mockFile = mock(MultipartFile.class);
+
+			when(vehicleRepository.findById(id)).thenReturn(Optional.empty());
+
+			assertThatThrownBy(() -> vehicleService.uploadImage(id, mockFile))
+					.isInstanceOf(ResourceNotFoundException.class);
+		}
 	}
 }

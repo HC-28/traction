@@ -8,6 +8,7 @@ import com.traction.entity.Vehicle;
 import com.traction.entity.VehicleStatus;
 import com.traction.repository.UserRepository;
 import com.traction.repository.VehicleRepository;
+import com.traction.service.CloudinaryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -15,7 +16,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -59,6 +62,13 @@ class VehicleControllerIntegrationTest {
 
 	@Autowired
 	private UserRepository userRepository;
+
+	/**
+	 * MockBean replaces the real CloudinaryService in the Spring context,
+	 * preventing actual HTTP calls to Cloudinary during integration tests.
+	 */
+	@MockBean
+	private CloudinaryService cloudinaryService;
 
 	private String adminToken;
 	private String userToken;
@@ -380,6 +390,50 @@ class VehicleControllerIntegrationTest {
 			mockMvc.perform(delete("/api/vehicles/{id}", UUID.randomUUID())
 							.header("Authorization", "Bearer " + adminToken))
 					.andExpect(status().isNotFound());
+		}
+	}
+
+	// ─────────────────────────────────────────────────────────────────────────────────
+	// POST /api/vehicles/{id}/image  — Cloudinary Upload
+	// ─────────────────────────────────────────────────────────────────────────────────
+
+	@Nested
+	@DisplayName("POST /api/vehicles/{id}/image")
+	class UploadVehicleImageTests {
+
+		@Test
+		@DisplayName("ADMIN can upload vehicle image and receives Cloudinary URL in response")
+		void adminCanUploadImage() throws Exception {
+			Vehicle saved = vehicleRepository.save(buildVehicle("Toyota", "Camry", "IMGVIN000000001"));
+			String fakeUrl = "https://res.cloudinary.com/traction/vehicles/test.jpg";
+
+			org.mockito.Mockito.when(cloudinaryService.uploadImage(org.mockito.ArgumentMatchers.any()))
+					.thenReturn(fakeUrl);
+
+			MockMultipartFile file = new MockMultipartFile(
+					"file", "car.jpg", MediaType.IMAGE_JPEG_VALUE, "fake-image-bytes".getBytes());
+
+			mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+					.multipart("/api/vehicles/{id}/image", saved.getId())
+					.file(file)
+					.header("Authorization", "Bearer " + adminToken))
+					.andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isOk())
+					.andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath("$.data.imageUrl").value(fakeUrl));
+		}
+
+		@Test
+		@DisplayName("USER receives 403 when attempting to upload a vehicle image")
+		void userCannotUploadImage() throws Exception {
+			Vehicle saved = vehicleRepository.save(buildVehicle("Honda", "Civic", "IMGVIN000000002"));
+
+			MockMultipartFile file = new MockMultipartFile(
+					"file", "car.jpg", MediaType.IMAGE_JPEG_VALUE, "fake-image-bytes".getBytes());
+
+			mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+					.multipart("/api/vehicles/{id}/image", saved.getId())
+					.file(file)
+					.header("Authorization", "Bearer " + userToken))
+					.andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isForbidden());
 		}
 	}
 
