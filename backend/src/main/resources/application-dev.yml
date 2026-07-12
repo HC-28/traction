@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/traction_db}
+    username: ${DB_USERNAME:traction_user}
+    password: ${DB_PASSWORD:traction_pass}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+  threads:
+    virtual:
+      enabled: true
+jwt:
+  secret: ${JWT_SECRET:3cfa76ef14937c1c0ea519f8fc057a80fcd04a7a4e8bb4d9b4c9a0ac81eda8a4}
+  expiration: 86400000

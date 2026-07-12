@@ -1,4 +1,4 @@
-package com.traction.backend;
+package com.traction;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

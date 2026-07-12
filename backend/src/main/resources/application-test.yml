@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    url: jdbc:tc:postgresql:16:///traction_test
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+jwt:
+  secret: test-secret-key-for-testing-only-must-be-256-bits-abcdefghijklmnop
+  expiration: 3600000
