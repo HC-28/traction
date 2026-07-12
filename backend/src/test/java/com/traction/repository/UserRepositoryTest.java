@@ -100,9 +100,9 @@ class UserRepositoryTest {
 				.role(Role.USER)
 				.build();
 
-		userRepository.save(first);
+		userRepository.saveAndFlush(first);
 
-		assertThatThrownBy(() -> userRepository.save(second))
+		assertThatThrownBy(() -> userRepository.saveAndFlush(second))
 				.isInstanceOf(DataIntegrityViolationException.class);
 	}
 
@@ -122,9 +122,9 @@ class UserRepositoryTest {
 				.role(Role.USER)
 				.build();
 
-		userRepository.save(first);
+		userRepository.saveAndFlush(first);
 
-		assertThatThrownBy(() -> userRepository.save(second))
+		assertThatThrownBy(() -> userRepository.saveAndFlush(second))
 				.isInstanceOf(DataIntegrityViolationException.class);
 	}
 
