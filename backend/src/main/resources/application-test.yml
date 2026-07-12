@@ -1,7 +1,6 @@
 spring:
   datasource:
     url: jdbc:tc:postgresql:16:///traction_test
-    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
   jpa:
     hibernate:
       ddl-auto: validate
