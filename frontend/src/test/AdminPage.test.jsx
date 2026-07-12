@@ -138,6 +138,7 @@ describe('AdminPage', () => {
     });
 
     vi.spyOn(vehicleApi, 'deleteVehicle').mockResolvedValue();
+    window.confirm = vi.fn(() => true);
 
     renderComponent();
 
